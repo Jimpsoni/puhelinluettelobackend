@@ -1,0 +1,2 @@
+# puhelinluettelobackend
+Helsingin yliopiston FullStack MOOC-kurssin puhelinluettelotehtävän backend
