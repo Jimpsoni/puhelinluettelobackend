@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd ./dist && npm run build && cp -r build ./",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "mooc"
@@ -17,7 +15,9 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "mongoose": "^7.6.1",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
