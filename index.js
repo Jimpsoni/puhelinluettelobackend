@@ -61,13 +61,26 @@ app.get('/info', (req, res) => {
 app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndRemove(req.params.id)
       .then( result => res.status(204).end() )
-      .catch(error => next(error))
+      .catch( error => next(error) )
 })
 
 
-app.post("/api/persons", (req, res) => {
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+
+  const person = {
+    'name': body.name,
+    'number': body.number
+  }
+
+  Person.findByIdAndUpdate(body.id, person, { new: true })
+    .then(updatedPerson => res.json(updatedPerson))
+    .catch(error => next(error))
+})
+
+
+app.post("/api/persons", (req, res, next) => {
     const body = req.body
-    
     if (!body.name || !body.number) return res.json({"error": "missing data, check that you have name and number"})
 
     const newPerson = new Person({
