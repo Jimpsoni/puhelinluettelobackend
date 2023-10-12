@@ -40,21 +40,26 @@ app.get('/api/persons', (req, res, next) => {
 })
 
 
-// TODO
-app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id) // Etsitään ID
+app.get('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id
 
-    if(person == undefined) {res.status(404).end()}
-    else { res.json(person) }
+    Person.findById(id)
+      .then( result => res.status(200).send(result))
+      .catch( error => next(error) )
+
 })
 
-// TODO
-app.get('/info', (req, res) => {
-    const message = `Phonebook has info for ${2} people`
-    const time = new Date();
-    console.log(time)
-    res.send(`<p> ${message}</p> <p> ${time}</p>`)
+
+app.get('/info', (req, res, next) => {
+    Person.countDocuments({})
+    .then(
+      result => {
+        const message = `Phonebook has info for ${result} people`
+        const time = new Date();
+        res.send(`<p> ${message}</p> <p> ${time}</p>`)
+      }
+    )
+    .catch( error => next(error))
 }) 
 
 
