@@ -78,7 +78,11 @@ app.put('/api/persons/:id', (req, res, next) => {
     'number': body.number
   }
 
-  Person.findByIdAndUpdate(body.id, person, { new: true })
+  Person.findByIdAndUpdate(body.id, person, { 
+    new: true,
+    runValidators: true, 
+    context: 'query'
+  })
     .then(updatedPerson => res.json(updatedPerson))
     .catch(error => next(error))
 })
@@ -86,8 +90,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 app.post("/api/persons", (req, res, next) => {
     const body = req.body
-    if (!body.name || !body.number) return res.json({"error": "missing data, check that you have name and number"})
-
+    
     const newPerson = new Person({
         "name": body.name,
         "number": body.number,
@@ -109,6 +112,10 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'ServerError') {
     return response.status(500).send({error: 'Internal Server error'})
+  }
+
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
