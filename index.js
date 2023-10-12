@@ -1,7 +1,6 @@
 // Connect to DB
 const Person = require('./models/person')
 
-
 // määritellään express
 const express = require('express')
 const app = express()
@@ -9,16 +8,15 @@ const app = express()
 require('dotenv').config()
 
 app.use(express.static('dist'))
-
-const morgan = require('morgan')
 const cors = require('cors')
 
 // Middlewaret
 app.use(express.json())
 app.use(cors())
 
-morgan.token('data', function (req, res) { if (req.method == "POST") {return JSON.stringify(req.body)} })
 
+const morgan = require('morgan')
+morgan.token('data', function (req, res) { if (req.method == "POST") {return JSON.stringify(req.body)} })
 app.use(
     morgan(function (tokens, req, res) {
         return [
@@ -33,13 +31,16 @@ app.use(
 
 )
 
+
 // Määritellään API kutsut
-app.get('/api/persons', (req, res) => { 
+app.get('/api/persons', (req, res, next) => { 
   Person.find({}).then(person => {
   res.json(person) })
+  .catch(error => next(error))
 })
 
 
+// TODO
 app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     const person = persons.find(person => person.id === id) // Etsitään ID
@@ -48,19 +49,20 @@ app.get('/api/persons/:id', (req, res) => {
     else { res.json(person) }
 })
 
+// TODO
 app.get('/info', (req, res) => {
-    const message = `Phonebook has info for ${persons.length} people`
+    const message = `Phonebook has info for ${2} people`
     const time = new Date();
     console.log(time)
     res.send(`<p> ${message}</p> <p> ${time}</p>`)
 }) 
 
-app.delete('/api/persons/:id', (req, res) => {
+
+app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndRemove(req.params.id)
       .then( result => res.status(204).end() )
-      .catch( error => console.log("Error occured" + error) )
+      .catch(error => next(error))
 })
-
 
 
 app.post("/api/persons", (req, res) => {
@@ -77,8 +79,24 @@ app.post("/api/persons", (req, res) => {
     newPerson.save().then(person => {
       res.json(person)
     })
+    .catch(error => next(error))
 })
 
+
+// Error handler middleware
+const errorHandler = (error, request, response, next) => {
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  if (error.name === 'ServerError') {
+    return response.status(500).send({error: 'Internal Server error'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 
 
