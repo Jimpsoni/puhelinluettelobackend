@@ -1,0 +1,27 @@
+name: Run all the tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-latest
+    if: ${{ !contains( join( toJson(github.event.commits.*.message) ), '#skip' ) && github.event_name == 'push'}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies 
+        run: npm install
+        
+      - name: run tests
+        run: npm run test
+        
+      - name: Trigger deployment
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
