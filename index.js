@@ -50,7 +50,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 
 app.get('/api/persons/ping', (req, res, next) => {
-    res.status(200).send('pong'))
+    res.status(200).send('pong')
 })
 
 
