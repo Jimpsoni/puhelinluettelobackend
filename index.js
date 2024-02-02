@@ -46,7 +46,11 @@ app.get('/api/persons/:id', (req, res, next) => {
     Person.findById(id)
       .then( result => res.status(200).send(result))
       .catch( error => next(error) )
+})
 
+
+app.get('/api/persons/ping', (req, res, next) => {
+    res.status(200).send('pong')
 })
 
 
