@@ -1,0 +1,14 @@
+name: Healthcheck pipeline
+
+on:
+  schedule:
+    - cron: '50 15 * * *'
+
+jobs:
+  Healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pinging server
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: https://fullstackmoocjimi.onrender.com/
