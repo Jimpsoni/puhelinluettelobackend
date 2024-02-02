@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  Check_integrity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,6 +24,23 @@ jobs:
 
       - name: Check style
         run: npm run lint
-        
+
+
+  Deploy:
+    needs: [Check_integrity]
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger deployment
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+
+  tag_release:
+    needs: [Deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.55.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          DEFAULT_BUMP: patch
